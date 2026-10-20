@@ -1,0 +1,59 @@
+# SARIS configuration file.
+# Copy to saris.toml and adjust. Path to the config can also be given as the
+# first command line argument: ./saris /etc/saris/saris.toml
+
+[server]
+# Address and port to listen on.
+bind = "0.0.0.0:3000"
+# Root directory of the archive: <storage_dir>/<subject>/<year>/<file>
+storage_dir = "pliki"
+# Upload log (every attempt, OK and ERROR).
+log_file = "logs/saris.log"
+# Maximum size of a single uploaded file in megabytes.
+max_file_size_mb = 20
+# Allowed file extensions (case-insensitive).
+allowed_extensions = ["pdf", "ipynb"]
+# Take the client IP from the X-Forwarded-For header (only behind a reverse proxy).
+trust_proxy = false
+
+[admin]
+# Credentials for /admin (HTTP Basic Auth).
+username = "admin"
+password = "change-me"
+
+[smtp]
+# Send confirmation e-mails to students after a successful upload.
+enabled = false
+host = "smtp.example.com"
+port = 587
+username = ""
+password = ""
+from = "SARIS <saris@example.com>"
+# Optional: "auto" (TLS on 465, STARTTLS otherwise), "tls", "starttls" or "none".
+tls = "auto"
+
+# Subjects and their upload passwords. Add more [[subjects]] blocks as needed
+# (names may contain only letters, digits, '_', '-' and '.').
+[[subjects]]
+name = "PE"
+password = "pe-secret"
+
+[[subjects]]
+name = "EwEF"
+password = "ewef-secret"
+
+[[subjects]]
+name = "PSM"
+password = "psm-secret"
+
+[[subjects]]
+name = "PSW"
+password = "psw-secret"
+
+[[subjects]]
+name = "LUKP"
+password = "lukp-secret"
+
+[[subjects]]
+name = "inne"
+password = "inne-secret"

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SARIS — System Archiwizacji Raportów i Sprawozdań</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>SARIS</h1>
+      <p class="subtitle">System Archiwizacji Raportów i Sprawozdań</p>
+    </div>
+  </header>
+
+  <main class="container" id="main">
+    <!-- Success panel (hidden until a successful upload) -->
+    <section id="success-panel" class="panel panel-success" hidden tabindex="-1" aria-live="polite">
+      <h2>Plik został przyjęty</h2>
+      <p id="success-message"></p>
+      <dl class="summary">
+        <dt>Zapisano jako:</dt>
+        <dd><code id="success-stored-name"></code></dd>
+        <dt>Potwierdzenie e-mail:</dt>
+        <dd id="success-email"></dd>
+      </dl>
+      <button type="button" id="btn-again" class="btn btn-primary">Prześlij kolejny plik</button>
+    </section>
+
+    <!-- Error panel (server-side or network errors) -->
+    <section id="error-panel" class="panel panel-error" hidden tabindex="-1" role="alert">
+      <h2>Nie udało się przesłać pliku</h2>
+      <p>Popraw poniższe błędy i spróbuj ponownie:</p>
+      <ul id="error-list"></ul>
+    </section>
+
+    <form id="upload-form" class="panel" novalidate>
+      <p class="intro">Wypełnij formularz, aby przesłać raport lub sprawozdanie. Pola oznaczone <span class="req" aria-hidden="true">*</span> są wymagane.</p>
+
+      <!-- Student 1 (required) -->
+      <fieldset class="student" id="student-1">
+        <legend>Student 1 <span class="req" aria-hidden="true">*</span></legend>
+        <div class="grid-3">
+          <div class="field">
+            <label for="s1_first">Imię <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="s1_first" name="s1_first" autocomplete="given-name" required aria-describedby="s1_first-err">
+            <p class="field-error" id="s1_first-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="s1_last">Nazwisko <span class="req" aria-hidden="true">*</span></label>
+            <input type="text" id="s1_last" name="s1_last" autocomplete="family-name" required aria-describedby="s1_last-err">
+            <p class="field-error" id="s1_last-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="s1_email">E-mail <span class="req" aria-hidden="true">*</span></label>
+            <input type="email" id="s1_email" name="s1_email" autocomplete="email" inputmode="email" required aria-describedby="s1_email-err">
+            <p class="field-error" id="s1_email-err" aria-live="polite"></p>
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- Students 2 and 3 (optional, collapsible) -->
+      <fieldset class="student optional" id="student-2" hidden>
+        <legend>Student 2 <span class="opt">(opcjonalnie)</span></legend>
+        <div class="grid-3">
+          <div class="field">
+            <label for="s2_first">Imię</label>
+            <input type="text" id="s2_first" name="s2_first" autocomplete="off" aria-describedby="s2_first-err">
+            <p class="field-error" id="s2_first-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="s2_last">Nazwisko</label>
+            <input type="text" id="s2_last" name="s2_last" autocomplete="off" aria-describedby="s2_last-err">
+            <p class="field-error" id="s2_last-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="s2_email">E-mail</label>
+            <input type="email" id="s2_email" name="s2_email" autocomplete="off" inputmode="email" aria-describedby="s2_email-err">
+            <p class="field-error" id="s2_email-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-link btn-remove" data-student="2">Usuń studenta 2</button>
+      </fieldset>
+
+      <fieldset class="student optional" id="student-3" hidden>
+        <legend>Student 3 <span class="opt">(opcjonalnie)</span></legend>
+        <div class="grid-3">
+          <div class="field">
+            <label for="s3_first">Imię</label>
+            <input type="text" id="s3_first" name="s3_first" autocomplete="off" aria-describedby="s3_first-err">
+            <p class="field-error" id="s3_first-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="s3_last">Nazwisko</label>
+            <input type="text" id="s3_last" name="s3_last" autocomplete="off" aria-describedby="s3_last-err">
+            <p class="field-error" id="s3_last-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="s3_email">E-mail</label>
+            <input type="email" id="s3_email" name="s3_email" autocomplete="off" inputmode="email" aria-describedby="s3_email-err">
+            <p class="field-error" id="s3_email-err" aria-live="polite"></p>
+          </div>
+        </div>
+        <button type="button" class="btn btn-link btn-remove" data-student="3">Usuń studenta 3</button>
+      </fieldset>
+
+      <div class="add-students">
+        <button type="button" id="btn-add-2" class="btn btn-secondary" aria-controls="student-2">+ Dodaj studenta 2</button>
+        <button type="button" id="btn-add-3" class="btn btn-secondary" aria-controls="student-3" hidden>+ Dodaj studenta 3</button>
+      </div>
+
+      <fieldset>
+        <legend>Zajęcia i dokument</legend>
+        <div class="grid-2">
+          <div class="field">
+            <label for="subject">Przedmiot <span class="req" aria-hidden="true">*</span></label>
+            <select id="subject" name="subject" required aria-describedby="subject-err">
+              <option value="">— wybierz przedmiot —</option>
+            </select>
+            <p class="field-error" id="subject-err" aria-live="polite"></p>
+          </div>
+          <div class="field">
+            <label for="password">Hasło do przedmiotu <span class="req" aria-hidden="true">*</span></label>
+            <input type="password" id="password" name="password" autocomplete="off" required aria-describedby="password-err">
+            <p class="field-error" id="password-err" aria-live="polite"></p>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="title">Tytuł ćwiczenia <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="title" name="title" required maxlength="200" aria-describedby="title-err">
+          <p class="field-error" id="title-err" aria-live="polite"></p>
+        </div>
+
+        <div class="field" role="radiogroup" aria-labelledby="doc_type-label" aria-describedby="doc_type-err">
+          <span class="label" id="doc_type-label">Typ dokumentu <span class="req" aria-hidden="true">*</span></span>
+          <div class="radios" id="doc_type-group">
+            <label class="radio"><input type="radio" name="doc_type" value="raport"> raport</label>
+            <label class="radio"><input type="radio" name="doc_type" value="sprawozdanie"> sprawozdanie</label>
+          </div>
+          <p class="field-error" id="doc_type-err" aria-live="polite"></p>
+        </div>
+
+        <div class="field">
+          <label for="file">Plik <span class="req" aria-hidden="true">*</span></label>
+          <input type="file" id="file" name="file" accept=".pdf,.ipynb" required aria-describedby="file-hint file-info file-err">
+          <p class="hint" id="file-hint">Dozwolone typy: <span id="allowed-ext">.pdf, .ipynb</span>; maksymalny rozmiar: <span id="max-size">20</span> MB.</p>
+          <p class="file-info" id="file-info" aria-live="polite"></p>
+          <p class="field-error" id="file-err" aria-live="polite"></p>
+        </div>
+      </fieldset>
+
+      <div class="progress-wrap" id="progress-wrap" hidden>
+        <progress id="progress" max="100" value="0" aria-label="Postęp przesyłania"></progress>
+        <span id="progress-text">0%</span>
+      </div>
+
+      <div class="actions">
+        <button type="submit" id="btn-submit" class="btn btn-primary">Prześlij plik</button>
+      </div>
+    </form>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <a href="/admin">Panel administratora</a>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
